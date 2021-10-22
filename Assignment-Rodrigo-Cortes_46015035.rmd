@@ -1,0 +1,127 @@
+---
+title: "STAT2170_Assignment_RodrigoCortes_46015035"
+author: "Rodrigo Cortes"
+date: "22/10/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown Assignment
+
+Question 1:
+
+a)  By looking at the Scatter plot matrix and Correlation matrix below, we can see that the number of bird species seems to be in correlation with AR, EL and DEc, but not so correlated with DNI. DEc and DNI seem to be less correlated with the other predictors. All other predictors seem to have a higher correlation with each other.
+
+```{r paramo matrix}
+paramo = read.table("paramo.dat", header = TRUE)
+plot(paramo)
+pairs(paramo, panel = panel.smooth)
+cor(paramo)
+```
+
+b)  i\. Multiple regression model formula:
+
+$$
+Y = \beta_1 + \beta_2X_2 + \beta_3X_3 + \beta_4X_4 + \epsilon 
+$$
+
+(ii) Hypotheses:
+
+$$
+H_0: \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0
+$$
+
+$$
+H_1: \beta_i \neq 0 \;for \;at \;least \;one \;i
+$$
+
+(iii) Below is the ANOVA table for the overall ANOVA test for multiple regression
+
+```{r anova table}
+paramo.lm = lm(N ~ AR + EL + DEc + DNI, data = paramo)
+anova(paramo.lm)
+```
+
+(iv) Using the data below, the Null distribution (F statistic) for this test is 6.085 on 4 and 9 DF. The p-value is 0.01182.
+
+```{r summary}
+summary(paramo.lm)
+```
+
+(v) Conclusion: We reject the null hypothesis as the p-value is under the 5% level. There is a significant linear relationship between the number of bird species in all Paramo's, and at least one of the predictors used in this study.
+
+<!-- -->
+
+c)  When looking into each predictor in the ANOVA table above, it looks like both EL and DNI both have an insignificant linear relationship with the number of bird species, so a multiple regression model can be adjusted to exclude EL and DNI to further test the linear relationship between the remaining predictors and the number of bird species.
+
+d)  $R^2$ for the above model is 73.01% goodness of fit. This means that 73.01% of the predictor variances are explained.
+
+e)  Below is the final fitted regression model excluding EL and DNI:
+
+```{r final fitted regression model}
+paramo.lm2 = lm(N ~ AR + + DEc, data = paramo)
+anova(paramo.lm2)
+summary(paramo.lm2)
+```
+
+f\. The $R^2$ for the final fitted model is 71.13%, and the adjusted $R^2$ is 65.88%. By eliminating the 2 parameters in EL and DNI, the reduction in variables has decreased the goodness of fit ($R^2$). The adjusted $R^2$ is used to penalise the number of extra parameters to eliminate the increase in $R^2$ which increases each time an extra parameter is introduced.
+
+g\. As per below, when there is an increase of 1 species of bird present in all Paramos, there is a 95% confidence that the increase in size of AR is between 1.699121 $km^2$ to 11.6696 $km^2$.
+
+```{r confidence interval for AR}
+confint(paramo.lm2, "AR")
+```
+
+Question 2:
+
+a)  From viewing the table below, the design of the tree shrews data is balances as there is the same number of replicates per treatment combination.
+
+```{r Treeshrew table}
+Treeshrew = read.table("TreeShrews.dat", header = TRUE)
+table (Treeshrew [, c("Shrews", "Sleep")])
+
+```
+
+b)  from viewing both preliminary plots below, we can see an interaction.....
+
+```{r preliminary graphs}
+with(Treeshrew, interaction.plot(Shrews, Sleep, HeartRates, trace.label = "Sleep Type", xlab = "Shrews", ylab = "HeartRates", col = 1:3))
+with(Treeshrew, interaction.plot(Sleep, Shrews, HeartRates, trace.label = "Shrews", xlab = "Sleep", ylab = "HeartRates", col = 1:3))
+
+```
+
+c)  As there are no replicates per treatment combination between Shrews and Sleep, we cannot test for interaction , therefore this data set cannot fit a Two-Way ANOVA with interaction model.
+
+d)  i\. Two-Way Anova Model formula
+
+$$
+Y_ijk = \mu + \alpha_i + \beta_j + \gamma_ij + \epsilon_ijk, \epsilon \sim N(0,\sigma^2)
+$$
+
+(ii) Hypotheses
+
+$$
+H_0: \gamma_ij = 0
+$$
+
+$$
+H_1:\; at\; least\; one\;\gamma_ij\; is\; not\; zero
+$$
+
+(iii) ANOVA table
+
+```{r Treeshrew ANOVA table}
+Treeshrew.aov = aov(HeartRates ~ Shrews * Sleep, data = Treeshrew)
+anova(Treeshrew.aov)
+```
+
+(iv) From the residuals vs fitted graph below, there seems to be no pattern, so variability of residuals appear constant, and the normal quantile plots below appear linear, suggesting that the residuals are normally distributed.
+
+```{r Assumptions}
+plot(Treeshrew.aov, which = 1:2)
+```
+
+e)  Both preliminary interaction plots stated in section 2 b) show an interaction between Heart-rates and the factors of the different Shrews and types of Sleep, but due to there being no replications in the treatment combinations, this sample size in insufficient to be a conclusive study.

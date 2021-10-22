@@ -125,3 +125,4 @@ plot(Treeshrew.aov, which = 1:2)
 ```
 
 e)  Both preliminary interaction plots stated in section 2 b) show an interaction between Heart-rates and the factors of the different Shrews and types of Sleep, but due to there being no replications in the treatment combinations, this sample size in insufficient to be a conclusive study.
+The end
